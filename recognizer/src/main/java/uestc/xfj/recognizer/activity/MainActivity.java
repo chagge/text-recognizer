@@ -13,7 +13,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.orhanobut.logger.Logger;
 
@@ -64,6 +66,14 @@ public class MainActivity extends AppCompatActivity {
                         }
                         break;
                 }
+                return true;
+            }
+        });
+
+        imageView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Toast.makeText(MainActivity.this, "该文字内容是XXXX", Toast.LENGTH_SHORT).show();
                 return true;
             }
         });
