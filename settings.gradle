@@ -1,1 +1,1 @@
-include ':recognizer'
+include ':recognizer', ':galleryfinal'

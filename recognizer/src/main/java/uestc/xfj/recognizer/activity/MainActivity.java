@@ -2,6 +2,7 @@ package uestc.xfj.recognizer.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -9,10 +10,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -21,62 +21,77 @@ import com.orhanobut.logger.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
+import cn.finalteam.galleryfinal.GalleryFinal;
+import cn.finalteam.galleryfinal.model.PhotoInfo;
 import uestc.xfj.recognizer.Constants;
 import uestc.xfj.recognizer.MyApp;
 import uestc.xfj.recognizer.R;
+import uestc.xfj.recognizer.utils.FileUtils;
 
 import static uestc.xfj.recognizer.R.id.img_show;
 
 public class MainActivity extends AppCompatActivity {
 
 
-    public Toolbar toolbar;
+    public ImageView takePic;
+    public ImageView choosePic;
     public ImageView imageView;
-    private static final String  TAG  = "uestc.xfj.recognizer.activity.MainActivity";
     private File currentImageFile = null;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
         imageView = (ImageView) findViewById(img_show);
-        toolbar.setTitle("文字识别");
-        setSupportActionBar(toolbar);
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+        takePic = (ImageView) findViewById(R.id.take_pic);
+        choosePic = (ImageView) findViewById(R.id.choose_pic);
+        takePic.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.take_pic:
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            if(checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
-                                Logger.d("还是没有权限啊");
-                                requestPermissions(new String[]{Manifest.permission.CAMERA,
+            public void onClick(View v) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if(checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+                        Logger.d("还是没有权限啊");
+                        requestPermissions(new String[]{Manifest.permission.CAMERA,
                                         Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                        Constants.PERMISSION);
-                            }else{
-                                Logger.d("开始了相机调用");
-                                doCamera();
-                            }
-                        }else{
-                            Logger.d("已经有权限了");
-                            doCamera();
-                        }
-                        break;
+                                Constants.PERMISSION);
+                    }else{
+                        Logger.d("开始了相机调用");
+                        doCamera();
+                    }
+                }else{
+                    Logger.d("已经有权限了");
+                    doCamera();
                 }
+            }
+        });
+        choosePic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GalleryFinal.openGallerySingle(Constants.REQUEST_CODE_GALLERY, MyApp.functionConfig, mOnHanlderResultCallback);
+            }
+        });
+        imageView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                new AlertDialog.Builder(MainActivity.this).setMessage("是否识别该图片的文字").setPositiveButton("嗯", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(MainActivity.this, PreviewActivity.class);
+                        startActivity(intent);
+                    }
+                }).setNegativeButton("不要", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                }).show();
                 return true;
             }
         });
 
-        imageView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                Toast.makeText(MainActivity.this, "该文字内容是XXXX", Toast.LENGTH_SHORT).show();
-                return true;
-            }
-        });
+
     }
 
     @Override
@@ -85,12 +100,18 @@ public class MainActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    private Uri getUri(){
+        currentImageFile = FileUtils.getImagePath();
+        return Uri.fromFile(currentImageFile);
+    }
+
     private void doCamera(){
-        File dir =  MyApp.getAppContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File dir = MyApp.getAppContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         if(dir.exists()){
             dir.mkdirs();
         }
-        currentImageFile = new File(dir,System.currentTimeMillis() + ".jpg");
+        FileUtils.setImagePath(new File(dir,System.currentTimeMillis() + ".jpg"));
+        currentImageFile = FileUtils.getImagePath();
         if(!currentImageFile.exists()){
             try {
                 currentImageFile.createNewFile();
@@ -98,10 +119,8 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-
         Intent it = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         it.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(currentImageFile));
-        startActivityForResult(it, Activity.DEFAULT_KEYS_DIALER);
         startActivityForResult(it, Activity.DEFAULT_KEYS_DIALER);
 
     }
@@ -130,8 +149,23 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == Activity.DEFAULT_KEYS_DIALER){
-            Logger.d("到底执行没执行？？？");
             imageView.setImageURI(Uri.fromFile(currentImageFile));
         }
     }
+
+    private GalleryFinal.OnHanlderResultCallback mOnHanlderResultCallback = new GalleryFinal.OnHanlderResultCallback() {
+        @Override
+        public void onHanlderSuccess(int reqeustCode, List<PhotoInfo> resultList) {
+            if (resultList != null) {
+                Logger.d(resultList.get(0).getPhotoPath());
+                FileUtils.setImagePath(new File(resultList.get(0).getPhotoPath()));
+                imageView.setImageURI(getUri());
+            }
+        }
+
+        @Override
+        public void onHanlderFailure(int requestCode, String errorMsg) {
+            Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+        }
+    };
 }

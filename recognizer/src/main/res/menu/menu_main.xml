@@ -5,5 +5,12 @@
     <item android:id="@+id/take_pic"
           android:title="照相机"
           android:icon="@drawable/ic_camera_alt_white_36dp"
-          app:showAsAction="always" />
+        android:orderInCategory="80"
+        app:showAsAction="always" />
+
+    <item android:id="@+id/choose_pic"
+        android:title="选择图片"
+        android:icon="@drawable/ic_sd_storage_white_36dp"
+        android:orderInCategory="90"
+        app:showAsAction="always" />
 </menu>
