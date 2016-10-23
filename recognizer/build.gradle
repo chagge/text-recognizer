@@ -4,6 +4,9 @@ android {
     compileSdkVersion 23
     buildToolsVersion "24.0.0"
     defaultConfig {
+        jackOptions {
+            enabled true
+        }
         applicationId "uestc.xfj.recognizer"
         minSdkVersion 14
         targetSdkVersion 23
@@ -17,6 +20,17 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    dexOptions{
+        dexInProcess true
+        preDexLibraries true
+        javaMaxHeapSize "4g"
+        incremental true
+    }
 }
 
 dependencies {
@@ -29,6 +43,11 @@ dependencies {
     compile 'com.android.support:support-v4:23.1.1'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'info.hoang8f:fbutton:1.0.5'
     testCompile 'junit:junit:4.12'
     compile project(':galleryfinal')
+    compile project(':catloadinglibrary')
+    compile project(':byhieg')
+    compile files('libs/javaws.jar')
+    compile files('libs/rt.jar')
 }

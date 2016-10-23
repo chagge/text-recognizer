@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="uestc.xfj.recognizer.activity.MainActivity"
-    android:background="@color/white"
+    android:background="@drawable/bg_gf_crop_texture"
     android:orientation="vertical">
 
     <include layout="@layout/headbar"/>
@@ -16,6 +16,5 @@
         android:id="@+id/img_show"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:scaleType="fitXY"/>
+        android:layout_weight="1" />
 </LinearLayout>

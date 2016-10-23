@@ -1,1 +1,1 @@
-include ':recognizer', ':galleryfinal'
+include ':recognizer', ':galleryfinal', ':catloadinglibrary', ':byhieg'

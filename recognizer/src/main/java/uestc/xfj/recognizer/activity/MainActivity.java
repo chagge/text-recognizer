@@ -11,18 +11,20 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.byhieglibrary.Activity.BaseActivity;
 import com.orhanobut.logger.Logger;
+import com.roger.catloadinglibrary.CatLoadingView;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import butterknife.Bind;
 import cn.finalteam.galleryfinal.GalleryFinal;
 import cn.finalteam.galleryfinal.model.PhotoInfo;
 import uestc.xfj.recognizer.Constants;
@@ -30,23 +32,30 @@ import uestc.xfj.recognizer.MyApp;
 import uestc.xfj.recognizer.R;
 import uestc.xfj.recognizer.utils.FileUtils;
 
-import static uestc.xfj.recognizer.R.id.img_show;
+public class MainActivity extends BaseActivity {
 
-public class MainActivity extends AppCompatActivity {
-
-
+    @Bind(R.id.take_pic)
     public ImageView takePic;
+    @Bind(R.id.choose_pic)
     public ImageView choosePic;
+    @Bind(R.id.img_show)
     public ImageView imageView;
+
     private File currentImageFile = null;
+    private CatLoadingView mView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        imageView = (ImageView) findViewById(img_show);
-        takePic = (ImageView) findViewById(R.id.take_pic);
-        choosePic = (ImageView) findViewById(R.id.choose_pic);
+    public int getLayoutId() {
+        return R.layout.activity_main;
+    }
+
+    @Override
+    public void initData() {
+        mView = new CatLoadingView();
+    }
+
+    @Override
+    public void initEvent() {
         takePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,20 +87,59 @@ public class MainActivity extends AppCompatActivity {
                 new AlertDialog.Builder(MainActivity.this).setMessage("是否识别该图片的文字").setPositiveButton("嗯", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(MainActivity.this, PreviewActivity.class);
-                        startActivity(intent);
+                        Intent intent = new Intent(MainActivity.this, RecognizerActivity.class);
+                        Bundle bundle = new Bundle();
+                        if (currentImageFile != null) {
+                            bundle.putString("path",currentImageFile.getAbsolutePath());
+                            intent.putExtra("data", bundle);
+                            startActivity(intent);
+                        }else{
+                            showToast("图片框没有图片，请选择图片");
+                        }
+
                     }
                 }).setNegativeButton("不要", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
+                        mView.show(getSupportFragmentManager(), "");
                     }
                 }).show();
                 return true;
             }
         });
 
+    }
+    @Override
+    public void initView() {
 
+    }
+
+    @Override
+    public void initTheme() {
+
+    }
+
+    private GalleryFinal.OnHanlderResultCallback mOnHanlderResultCallback = new GalleryFinal.OnHanlderResultCallback() {
+        @Override
+        public void onHanlderSuccess(int reqeustCode, List<PhotoInfo> resultList) {
+            if (resultList != null) {
+                Logger.d(resultList.get(0).getPhotoPath());
+                FileUtils.setImagePath(new File(resultList.get(0).getPhotoPath()));
+                imageView.setImageURI(getUri());
+            }
+        }
+
+        @Override
+        public void onHanlderFailure(int requestCode, String errorMsg) {
+            Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+        }
+    };
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == Activity.DEFAULT_KEYS_DIALER){
+            imageView.setImageURI(Uri.fromFile(currentImageFile));
+        }
     }
 
     @Override
@@ -145,27 +193,4 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == Activity.DEFAULT_KEYS_DIALER){
-            imageView.setImageURI(Uri.fromFile(currentImageFile));
-        }
-    }
-
-    private GalleryFinal.OnHanlderResultCallback mOnHanlderResultCallback = new GalleryFinal.OnHanlderResultCallback() {
-        @Override
-        public void onHanlderSuccess(int reqeustCode, List<PhotoInfo> resultList) {
-            if (resultList != null) {
-                Logger.d(resultList.get(0).getPhotoPath());
-                FileUtils.setImagePath(new File(resultList.get(0).getPhotoPath()));
-                imageView.setImageURI(getUri());
-            }
-        }
-
-        @Override
-        public void onHanlderFailure(int requestCode, String errorMsg) {
-            Toast.makeText(MainActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
-        }
-    };
 }

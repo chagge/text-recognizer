@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_preview"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context="uestc.xfj.recognizer.activity.RecognizerActivity">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="@color/maincolor"
+        android:paddingLeft="@dimen/activity_vertical_margin"
+        android:paddingRight="@dimen/activity_vertical_margin">
+
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_arrow_back_white_36dp" />
+
+        <TextView
+            android:id="@+id/copy_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="雪疯君"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:background="@drawable/bg_gf_crop_texture" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="4"
+        android:padding="@dimen/activity_vertical_margin">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+            <info.hoang8f.widget.FButton
+                android:id="@+id/gray_button"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:text="灰度化"
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                fbutton:buttonColor="@color/fbutton_color_concrete"
+                fbutton:cornerRadius="5dp"
+                fbutton:shadowColor="@color/fbutton_color_concrete"
+                fbutton:shadowEnabled="true"
+                fbutton:shadowHeight="5dp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+            <info.hoang8f.widget.FButton
+                android:id="@+id/two_value_button"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:text="二值化"
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                fbutton:buttonColor="@color/fbutton_color_alizarin"
+                fbutton:cornerRadius="5dp"
+                fbutton:shadowColor="@color/fbutton_color_alizarin"
+                fbutton:shadowEnabled="true"
+                fbutton:shadowHeight="5dp" />
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+            <info.hoang8f.widget.FButton
+                android:id="@+id/denoising_button"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:text="去噪"
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                fbutton:buttonColor="@color/fbutton_color_sun_flower"
+                fbutton:cornerRadius="5dp"
+                fbutton:shadowColor="@color/fbutton_color_sun_flower"
+                fbutton:shadowEnabled="true"
+                fbutton:shadowHeight="5dp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+            <info.hoang8f.widget.FButton
+                android:id="@+id/recognizer_button"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:text="识别"
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                fbutton:buttonColor="@color/fbutton_color_wisteria"
+                fbutton:cornerRadius="5dp"
+                fbutton:shadowColor="@color/fbutton_color_wisteria"
+                fbutton:shadowEnabled="true"
+                fbutton:shadowHeight="5dp" />
+        </RelativeLayout>
+
+
+
+
+
+
+
+    </LinearLayout>
+
+
+</LinearLayout>
