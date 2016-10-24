@@ -5,21 +5,22 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.byhieglibrary.Activity.BaseActivity;
+import com.orhanobut.logger.Logger;
 import com.roger.catloadinglibrary.CatLoadingView;
 
 import java.io.File;
-import java.io.IOException;
 
 import butterknife.Bind;
 import info.hoang8f.widget.FButton;
 import uestc.xfj.recognizer.R;
-import uestc.xfj.recognizer.alg.TwoValue;
+import uestc.xfj.recognizer.alg.ImageUtils;
 
 public class RecognizerActivity extends BaseActivity {
 
@@ -41,6 +42,10 @@ public class RecognizerActivity extends BaseActivity {
     public CatLoadingView catLoadingView;
     private int count = 1;
     private String path;
+    private ImageUtils imageUtils;
+    private Bitmap grayBitmap;
+    private Bitmap twoBitmap;
+    private Handler handler;
 
     @Override
     public int getLayoutId() {
@@ -56,7 +61,8 @@ public class RecognizerActivity extends BaseActivity {
         }else{
             showToast("文件有问题");
         }
-
+        imageUtils = new ImageUtils();
+        handler = new Handler();
     }
 
     @Override
@@ -104,12 +110,46 @@ public class RecognizerActivity extends BaseActivity {
         gray.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TwoValue twoValue = new TwoValue();
-                try {
-                    image.setImageURI(Uri.fromFile(twoValue.grayImage(path)));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                catLoadingView.show(getSupportFragmentManager(), "");
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Bitmap bitmap = BitmapFactory.decodeFile(path);
+                        grayBitmap = imageUtils.lineGrey(bitmap);
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Logger.d("aaaaaaa");
+                                image.setImageBitmap(grayBitmap);
+                                catLoadingView.dismiss();
+                                Logger.d("bbbbbbb");
+                            }
+                        });
+                    }
+                }).start();
+
+            }
+        });
+
+        two.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                catLoadingView.show(getSupportFragmentManager(), "");
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        twoBitmap = imageUtils.gray2Binary(grayBitmap);
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Logger.d("ccccccc");
+                                image.setImageBitmap(twoBitmap);
+                                catLoadingView.dismiss();
+                                Logger.d("ddddddd");
+                            }
+                        });
+                    }
+                }).start();
             }
         });
 
@@ -124,4 +164,6 @@ public class RecognizerActivity extends BaseActivity {
     public void initTheme() {
 
     }
+
+
 }
