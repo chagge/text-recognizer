@@ -78,6 +78,7 @@
             android:layout_toRightOf="@id/ll_title"
             android:layout_marginBottom="-2.5dp"
             android:layout_centerVertical="true"
+            android:visibility="gone"
             />
 
         <LinearLayout
@@ -106,6 +107,7 @@
                 android:src="@drawable/ic_gf_preview"
                 android:padding="6dp"
                 android:visibility="gone"
+                android:clickable="false"
                 />
 
             <ImageView
@@ -116,6 +118,7 @@
                 android:src="@drawable/ic_gf_camera"
                 android:padding="6dp"
                 android:visibility="gone"
+                android:clickable="false"
                 />
 
             <TextView

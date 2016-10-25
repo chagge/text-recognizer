@@ -57,6 +57,7 @@
             android:padding="6dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_gf_preview"
+            android:clickable="false"
             android:visibility="gone"
             />
 
@@ -88,6 +89,7 @@
             android:scaleType="centerInside"
             android:src="@drawable/ic_gf_camera"
             android:visibility="gone"
+            android:clickable="false"
             android:layout_marginRight="9dp"
             />
     </LinearLayout>

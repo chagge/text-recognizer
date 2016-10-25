@@ -6,12 +6,16 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 
+import java.util.Arrays;
+
 /**
  * Created by byhieg on 16-10-24.
  * Mail byhieg@gmail.com
  */
 
 public class ImageUtils {
+
+    private int count;
 
     public Bitmap bitmap2Gray(Bitmap bmSrc) {
         // 得到图片的长和宽
@@ -95,11 +99,58 @@ public class ImageUtils {
                 int blue = (col & 0x000000FF);
                 // 用公式X = 0.3×R+0.59×G+0.11×B计算出X代替原来的RGB
                 int gray = (int) ((float) red * 0.3 + (float) green * 0.59 + (float) blue * 0.11);
+
                 //对图像进行二值化处理
                 if (gray <= 95) {
                     gray = 0;
                 } else {
                     gray = 255;
+                    count++;
+                }
+                    // 新的ARGB
+                    int newColor = alpha | (gray << 16) | (gray << 8) | gray;
+                    //设置新图像的当前像素值
+                    binarymap.setPixel(i, j, newColor);
+
+
+            }
+        }
+        if (count == width * height) {
+            binarymap = doReverse(graymap);
+        }
+        return binarymap;
+    }
+
+    /**
+     * 正常的二值化处理，图片可能会出现都是白色的情况，这里我做了反转处理，将字的部分变为黑色，背景为白色
+     * @param graymap
+     * @return
+     */
+    private Bitmap doReverse(Bitmap graymap) {
+        int width = graymap.getWidth();
+        int height = graymap.getHeight();
+        //创建二值化图像
+        Bitmap binarymap = null;
+        binarymap = graymap.copy(Bitmap.Config.ARGB_8888, true);
+        //依次循环，对图像的像素进行处理
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                //得到当前像素的值
+                int col = binarymap.getPixel(i, j);
+                //得到alpha通道的值
+                int alpha = col & 0xFF000000;
+                //得到图像的像素RGB的值
+                int red = (col & 0x00FF0000) >> 16;
+                int green = (col & 0x0000FF00) >> 8;
+                int blue = (col & 0x000000FF);
+                // 用公式X = 0.3×R+0.59×G+0.11×B计算出X代替原来的RGB
+                int gray = (int) ((float) red * 0.3 + (float) green * 0.59 + (float) blue * 0.11);
+
+                //对图像进行二值化处理
+                if (gray < 220) {
+                    gray = 255;
+                } else {
+                    gray = 0;
                 }
                 // 新的ARGB
                 int newColor = alpha | (gray << 16) | (gray << 8) | gray;
@@ -109,4 +160,56 @@ public class ImageUtils {
         }
         return binarymap;
     }
+
+    /**
+     * 中值滤波
+     */
+    public Bitmap medianFiltering(Bitmap denosingBitmap) {
+        int w = denosingBitmap.getWidth();
+        int h = denosingBitmap.getHeight();
+        Bitmap bitmap = null;
+        bitmap = denosingBitmap.copy(Bitmap.Config.ARGB_8888, true);
+        int[] pix = new int[w*h];
+        denosingBitmap.getPixels(pix,0,w,0,0,w,h);
+        bitmap.setPixels(doFilter(pix, w, h),
+                0,w,0,0,w,h);
+        return bitmap;
+    }
+    /**
+     * 中值滤波
+     * @param pix 像素矩阵数组
+     * @param w 矩阵的宽
+     * @param h 矩阵的高
+     * @return 处理后的数组
+     */
+    public int[] doFilter(int pix[], int w, int h) {
+        int newpix[] = new int[ w * h];
+        int[] temp = new int[9];
+        int r = 0;
+        for(int y = 0; y < h; y ++) {
+            for(int x = 0; x < w; x ++) {
+                if(x != 0 && x != w-1 && y !=0 && y !=h-1) {
+                    //g = median[(x-1,y-1) + f(x,y-1)+ f(x+1,y-1)
+                    //  + f(x-1,y) + f(x,y) + f(x+1,y)
+                    //  + f(x-1,y+1) + f(x,y+1) + f(x+1,y+1)]
+                    temp[0] = (pix[x-1+(y-1)*w] & 0x00FF0000) >> 16;
+                    temp[1] = (pix[x+(y-1)*w] & 0x00FF0000) >> 16;
+                    temp[2] = (pix[x+1+(y-1)*w] & 0x00FF0000) >> 16;
+                    temp[3] = (pix[x-1+(y)*w] & 0x00FF0000) >> 16;
+                    temp[4] = (pix[x+(y)*w] & 0x00FF0000) >> 16;
+                    temp[5] = (pix[x+1+(y)*w] & 0x00FF0000) >> 16;
+                    temp[6] = (pix[x-1+(y+1)*w] & 0x00FF0000) >> 16;
+                    temp[7] = (pix[x+(y+1)*w] & 0x00FF0000) >> 16;
+                    temp[8] = (pix[x+1+(y+1)*w] & 0x00FF0000) >> 16;
+                    Arrays.sort(temp);
+                    r = temp[4];
+                    newpix[y*w+x] = 255<<24 | r<<16 | r<<8 | r;
+                } else {
+                    newpix[y*w+x] = pix[y*w+x];
+                }
+            }
+        }
+        return newpix;
+    }
+
 }

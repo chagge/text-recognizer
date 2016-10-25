@@ -151,11 +151,11 @@ public class PhotoSelectActivity extends PhotoBaseActivity implements View.OnCli
             setTheme();
             mGvPhotoList.setEmptyView(mTvEmptyView);
 
-            if (GalleryFinal.getFunctionConfig().isCamera()) {
-                mIvTakePhoto.setVisibility(View.VISIBLE);
-            } else {
-                mIvTakePhoto.setVisibility(View.GONE);
-            }
+//            if (GalleryFinal.getFunctionConfig().isCamera()) {
+//                mIvTakePhoto.setVisibility(View.VISIBLE);
+//            } else {
+//                mIvTakePhoto.setVisibility(View.GONE);
+//            }
 
             refreshSelectCount();
             requestGalleryPermission();
@@ -496,11 +496,11 @@ public class PhotoSelectActivity extends PhotoBaseActivity implements View.OnCli
             mIvClear.setVisibility(View.GONE);
         }
 
-        if(GalleryFinal.getFunctionConfig().isEnablePreview()){
-            mIvPreView.setVisibility(View.VISIBLE);
-        } else {
-            mIvPreView.setVisibility(View.GONE);
-        }
+//        if(GalleryFinal.getFunctionConfig().isEnablePreview()){
+//            mIvPreView.setVisibility(View.VISIBLE);
+//        } else {
+//            mIvPreView.setVisibility(View.GONE);
+//        }
     }
 
     @Override

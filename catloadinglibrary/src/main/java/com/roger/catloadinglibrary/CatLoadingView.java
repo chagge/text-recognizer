@@ -36,7 +36,7 @@ public class CatLoadingView extends DialogFragment {
     if (mDialog == null) {
       mDialog = new Dialog(getActivity(), R.style.cart_dialog);
       mDialog.setContentView(R.layout.catloading_main);
-      mDialog.setCanceledOnTouchOutside(true);
+      mDialog.setCanceledOnTouchOutside(false);
       mDialog.getWindow().setGravity(Gravity.CENTER);
 
       operatingAnim = new RotateAnimation(360f, 0f, Animation.RELATIVE_TO_SELF, 0.5f,

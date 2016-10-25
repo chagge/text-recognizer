@@ -239,9 +239,9 @@ public class PhotoEditActivity extends CropImageActivity implements AdapterView.
                 e.printStackTrace();
             }
 
-            if (GalleryFinal.getFunctionConfig().isCamera()) {
-                mIvTakePhoto.setVisibility(View.VISIBLE);
-            }
+//            if (GalleryFinal.getFunctionConfig().isCamera()) {
+//                mIvTakePhoto.setVisibility(View.VISIBLE);
+//            }
 
             if (GalleryFinal.getFunctionConfig().isCrop()) {
                 mIvCrop.setVisibility(View.VISIBLE);
@@ -274,9 +274,9 @@ public class PhotoEditActivity extends CropImageActivity implements AdapterView.
                 hasForceCrop();
             }
 
-            if(GalleryFinal.getFunctionConfig().isEnablePreview()){
-                mIvPreView.setVisibility(View.VISIBLE);
-            }
+//            if(GalleryFinal.getFunctionConfig().isEnablePreview()){
+//                mIvPreView.setVisibility(View.VISIBLE);
+//            }
         }
     }
 
@@ -645,9 +645,9 @@ public class PhotoEditActivity extends CropImageActivity implements AdapterView.
                 mIvRotate.setVisibility(View.VISIBLE);
             }
 
-            if (GalleryFinal.getFunctionConfig().isCamera()) {
-                mIvTakePhoto.setVisibility(View.VISIBLE);
-            }
+//            if (GalleryFinal.getFunctionConfig().isCamera()) {
+//                mIvTakePhoto.setVisibility(View.VISIBLE);
+//            }
 
             if (GalleryFinal.getFunctionConfig().isMutiSelect()) {
                 mLlGallery.setVisibility(View.VISIBLE);

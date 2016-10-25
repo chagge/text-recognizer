@@ -101,7 +101,6 @@ public class MainActivity extends BaseActivity {
                 }).setNegativeButton("不要", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        mView.show(getSupportFragmentManager(), "");
                     }
                 }).show();
                 return true;
@@ -123,8 +122,8 @@ public class MainActivity extends BaseActivity {
         @Override
         public void onHanlderSuccess(int reqeustCode, List<PhotoInfo> resultList) {
             if (resultList != null) {
-                Logger.d(resultList.get(0).getPhotoPath());
-                FileUtils.setImagePath(new File(resultList.get(0).getPhotoPath()));
+                currentImageFile = new File(resultList.get(0).getPhotoPath());
+                FileUtils.setImagePath(currentImageFile);
                 imageView.setImageURI(getUri());
             }
         }
