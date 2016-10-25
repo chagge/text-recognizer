@@ -10,15 +10,22 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.example.byhieglibrary.Activity.BaseActivity;
 import com.example.byhieglibrary.Net.HttpUtils;
 import com.example.byhieglibrary.Net.ResultCallback;
+import com.hanks.htextview.HTextView;
 import com.orhanobut.logger.Logger;
 import com.roger.catloadinglibrary.CatLoadingView;
 
@@ -65,7 +72,8 @@ public class RecognizerActivity extends BaseActivity {
     private Bitmap bitmap;
     private ViewGroup layout;
     private String url;
-    private File postFile;
+    private File[] postFile = new File[4];
+    private int choose;
 
 
     @Override
@@ -87,6 +95,7 @@ public class RecognizerActivity extends BaseActivity {
         currentPath = path;
         layout = (ViewGroup)findViewById(R.id.activity_preview);
         url =  "http://115.159.145.201:8777/collectbug";
+        postFile[0] = imageFile;
     }
 
     @Override
@@ -100,6 +109,7 @@ public class RecognizerActivity extends BaseActivity {
         recognizer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                File temp = postFile[3];
                 if (nosingBitmap == null) {
                     Snackbar.make(layout,"你还没有去噪",Snackbar.LENGTH_LONG).setAction("点我去噪", new View.OnClickListener() {
                         @Override
@@ -109,7 +119,24 @@ public class RecognizerActivity extends BaseActivity {
                     }).show();
                     return;
                 }
-
+//                showPopupWindow();
+//                switch (choose) {
+//                    case 0:
+//                        temp = postFile[0];
+//                        break;
+//                    case 1:
+//                        temp = postFile[1];
+//                        break;
+//                    case 2:
+//                        temp = postFile[2];
+//                        break;
+//                    case 3:
+//                        temp = postFile[3];
+//                        break;
+//                    default:
+//                        showToast("请选择上传的图片");
+//                        return;
+//                }
                 catLoadingView.show(getSupportFragmentManager(), "");
                 HttpUtils.postFile(url, new ResultCallback<String>() {
                     @Override
@@ -128,8 +155,9 @@ public class RecognizerActivity extends BaseActivity {
                     public void onError(Request request, IOException e) {
                         Logger.d("唉唉唉");
                     }
-                },postFile,"file");
+                },temp,"file");
             }
+
         });
 
         copyLeft.setOnClickListener(new View.OnClickListener() {
@@ -226,6 +254,11 @@ public class RecognizerActivity extends BaseActivity {
                     @Override
                     public void run() {
                         image.setImageBitmap(grayBitmap);
+                        try {
+                            postFile[1] = generatePostFile(grayBitmap);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         currentPath = null;
                         twoBitmap = null;
                         nosingBitmap = null;
@@ -262,6 +295,11 @@ public class RecognizerActivity extends BaseActivity {
                         currentPath = null;
                         nosingBitmap = null;
                         image.setImageBitmap(twoBitmap);
+                        try {
+                            postFile[2] = generatePostFile(twoBitmap);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         catLoadingView.dismiss();
                     }
                 });
@@ -295,6 +333,11 @@ public class RecognizerActivity extends BaseActivity {
                         currentPath = null;
                         twoBitmap = null;
                         image.setImageBitmap(nosingBitmap);
+                        try {
+                            postFile[3] = generatePostFile(nosingBitmap);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         catLoadingView.dismiss();
                     }
                 });
@@ -307,12 +350,73 @@ public class RecognizerActivity extends BaseActivity {
         if(dir.exists()){
             dir.mkdirs();
         }
-        postFile = new File(dir, System.currentTimeMillis() + ".jpg");
-        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(postFile));
+        File tempFile = null;
+        tempFile = new File(dir, System.currentTimeMillis() + ".jpg");
+        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(tempFile));
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos);
         bos.flush();
         bos.close();
-        return postFile;
+        return tempFile;
     }
 
+
+    private void showPopupWindow() {
+        View contentView = LayoutInflater.from(this).inflate(R.layout.layout_popup, null);
+        HTextView origin = (HTextView) contentView.findViewById(R.id.origin);
+        HTextView gray = (HTextView) contentView.findViewById(R.id.gray);
+        HTextView two = (HTextView) contentView.findViewById(R.id.two);
+        HTextView noise = (HTextView) contentView.findViewById(R.id.noise);
+        final PopupWindow popupWindow = new PopupWindow(contentView,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                true);
+
+        popupWindow.setTouchable(true);
+        popupWindow.setTouchInterceptor(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return false;
+            }
+        });
+        popupWindow.setBackgroundDrawable(ContextCompat.getDrawable(this, R.color.transparent));
+        popupWindow.showAtLocation(image, Gravity.CENTER, 0, 0);
+        origin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                choose = 0;
+                popupWindow.dismiss();
+            }
+        });
+        gray.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                choose = 1;
+                popupWindow.dismiss();
+
+            }
+        });
+        two.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                choose = 2;
+                popupWindow.dismiss();
+            }
+        });
+        noise.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                choose = 3;
+                popupWindow.dismiss();
+            }
+        });
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (catLoadingView != null) {
+            catLoadingView.dismiss();
+        }
+    }
 }
