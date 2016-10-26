@@ -33,6 +33,8 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.Bind;
 import info.hoang8f.widget.FButton;
@@ -40,6 +42,7 @@ import okhttp3.Request;
 import uestc.xfj.recognizer.MyApp;
 import uestc.xfj.recognizer.R;
 import uestc.xfj.recognizer.alg.ImageUtils;
+import uestc.xfj.recognizer.bean.Recognizer;
 
 public class RecognizerActivity extends BaseActivity {
 
@@ -94,7 +97,7 @@ public class RecognizerActivity extends BaseActivity {
         handler = new Handler();
         currentPath = path;
         layout = (ViewGroup)findViewById(R.id.activity_preview);
-        url =  "http://115.159.145.201:8777/collectbug";
+        url =  "http://junwork.cn/recognizer/recog";
         postFile[0] = imageFile;
     }
 
@@ -109,7 +112,7 @@ public class RecognizerActivity extends BaseActivity {
         recognizer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                File temp = postFile[3];
+                File temp = postFile[0];
                 if (nosingBitmap == null) {
                     Snackbar.make(layout,"你还没有去噪",Snackbar.LENGTH_LONG).setAction("点我去噪", new View.OnClickListener() {
                         @Override
@@ -137,13 +140,19 @@ public class RecognizerActivity extends BaseActivity {
 //                        showToast("请选择上传的图片");
 //                        return;
 //                }
+                String fileName = temp.getName();
+                String prefix= fileName.substring(fileName.lastIndexOf(".")+1);
                 catLoadingView.show(getSupportFragmentManager(), "");
-                HttpUtils.postFile(url, new ResultCallback<String>() {
+                Map<String, String> params = new HashMap<>();
+                params.put("format",prefix);
+                params.put("lang", "chi_sim");
+                url = HttpUtils.url(url, null,params);
+                HttpUtils.postFile(url, new ResultCallback<Recognizer>() {
                     @Override
-                    public void onResponse(String response) {
+                    public void onResponse(Recognizer response) {
                         Logger.d(response);
                         Bundle bundle = new Bundle();
-                        bundle.putString("result",response);
+                        bundle.putString("result",response.getOutput());
                         Intent intent = new Intent();
                         intent.putExtra("data", bundle);
                         startActivity(ResultActivity.class, bundle);
