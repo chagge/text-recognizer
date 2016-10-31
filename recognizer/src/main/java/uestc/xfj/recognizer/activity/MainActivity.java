@@ -27,6 +27,8 @@ import java.util.List;
 import butterknife.Bind;
 import cn.finalteam.galleryfinal.GalleryFinal;
 import cn.finalteam.galleryfinal.model.PhotoInfo;
+import me.shaohui.advancedluban.Luban;
+import me.shaohui.advancedluban.OnCompressListener;
 import uestc.xfj.recognizer.Constants;
 import uestc.xfj.recognizer.MyApp;
 import uestc.xfj.recognizer.R;
@@ -84,23 +86,65 @@ public class MainActivity extends BaseActivity {
         imageView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                new AlertDialog.Builder(MainActivity.this).setMessage("是否识别该图片的文字").setPositiveButton("嗯", new DialogInterface.OnClickListener() {
+                new AlertDialog.Builder(MainActivity.this).setMessage("是否识别该图片的文字").setPositiveButton("识别英文", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(MainActivity.this, RecognizerActivity.class);
-                        Bundle bundle = new Bundle();
                         if (currentImageFile != null) {
-                            bundle.putString("path",currentImageFile.getAbsolutePath());
-                            intent.putExtra("data", bundle);
-                            startActivity(intent);
+                            Luban.get(MainActivity.this).load(currentImageFile).putGear(Luban.THIRD_GEAR).launch(new OnCompressListener() {
+                                @Override
+                                public void onStart() {
+                                    mView.show(getSupportFragmentManager(),"");
+                                }
+                                @Override
+                                public void onSuccess(File file) {
+                                    Intent intent = new Intent(MainActivity.this, RecognizerActivity.class);
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("path",file.getAbsolutePath());
+                                    bundle.putString("lang", "eng");
+                                    bundle.putString("origin", currentImageFile.getAbsolutePath());
+                                    intent.putExtra("data", bundle);
+                                    startActivity(intent);
+                                }
+                                @Override
+                                public void onError(Throwable e) {
+                                    Logger.d(e);
+                                }
+                            });
+
                         }else{
                             showToast("图片框没有图片，请选择图片");
                         }
 
                     }
-                }).setNegativeButton("不要", new DialogInterface.OnClickListener() {
+                }).setNegativeButton("识别中文", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        if (currentImageFile != null) {
+                            Luban.get(MainActivity.this).load(currentImageFile).putGear(Luban.THIRD_GEAR).launch(new OnCompressListener() {
+                                @Override
+                                public void onStart() {
+                                    mView.show(getSupportFragmentManager(),"");
+                                }
+                                @Override
+                                public void onSuccess(File file) {
+                                    Intent intent = new Intent(MainActivity.this, RecognizerActivity.class);
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("path",file.getAbsolutePath());
+                                    bundle.putString("lang", "chi_sim");
+                                    bundle.putString("origin", currentImageFile.getAbsolutePath());
+                                    intent.putExtra("data", bundle);
+                                    startActivity(intent);
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+                                    Logger.d(e);
+                                }
+                            });
+
+                        }else{
+                            showToast("图片框没有图片，请选择图片");
+                        }
                     }
                 }).show();
                 return true;

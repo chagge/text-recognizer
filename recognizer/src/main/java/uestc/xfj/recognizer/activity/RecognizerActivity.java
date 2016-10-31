@@ -77,7 +77,9 @@ public class RecognizerActivity extends BaseActivity {
     private String url;
     private File[] postFile = new File[4];
     private int choose;
-
+    private String lang;
+    private String originPath;
+    private File originFile;
 
     @Override
     public int getLayoutId() {
@@ -88,17 +90,23 @@ public class RecognizerActivity extends BaseActivity {
     public void initData() {
         catLoadingView = new CatLoadingView();
         path = getIntent().getBundleExtra("data").getString("path");
-        if(path != null){
+        lang = getIntent().getBundleExtra("data").getString("lang");
+        originPath = getIntent().getBundleExtra("data").getString("origin");
+        originFile = new File(originPath);
+        Logger.d(lang);
+        if (path != null) {
             imageFile = new File(path);
-        }else{
+            postFile[0] = imageFile;
+        } else {
             showToast("文件有问题");
         }
         imageUtils = new ImageUtils();
         handler = new Handler();
         currentPath = path;
-        layout = (ViewGroup)findViewById(R.id.activity_preview);
-        url =  "http://junwork.cn/recognizer/recog";
-        postFile[0] = imageFile;
+
+        layout = (ViewGroup) findViewById(R.id.activity_preview);
+        url = "http://junwork.cn/recognizer/recog";
+
     }
 
     @Override
@@ -112,16 +120,17 @@ public class RecognizerActivity extends BaseActivity {
         recognizer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                File temp = postFile[0];
-                if (nosingBitmap == null) {
-                    Snackbar.make(layout,"你还没有去噪",Snackbar.LENGTH_LONG).setAction("点我去噪", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            cancelNosing();
-                        }
-                    }).show();
-                    return;
-                }
+//                File temp = postFile[0];
+                File temp = originFile;
+//                if (nosingBitmap == null) {
+//                    Snackbar.make(layout,"你还没有去噪",Snackbar.LENGTH_LONG).setAction("点我去噪", new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//                            cancelNosing();
+//                        }
+//                    }).show();
+//                    return;
+//                }
 //                showPopupWindow();
 //                switch (choose) {
 //                    case 0:
@@ -141,18 +150,19 @@ public class RecognizerActivity extends BaseActivity {
 //                        return;
 //                }
                 String fileName = temp.getName();
-                String prefix= fileName.substring(fileName.lastIndexOf(".")+1);
+                String prefix = fileName.substring(fileName.lastIndexOf(".") + 1);
                 catLoadingView.show(getSupportFragmentManager(), "");
                 Map<String, String> params = new HashMap<>();
-                params.put("format",prefix);
-                params.put("lang", "chi_sim");
-                url = HttpUtils.url(url, null,params);
+                Logger.d(prefix);
+                params.put("format", prefix);
+                params.put("lang", lang);
+                url = HttpUtils.url(url, null, params);
                 HttpUtils.postFile(url, new ResultCallback<Recognizer>() {
                     @Override
                     public void onResponse(Recognizer response) {
                         Logger.d(response);
                         Bundle bundle = new Bundle();
-                        bundle.putString("result",response.getOutput());
+                        bundle.putString("result", response.getOutput());
                         Intent intent = new Intent();
                         intent.putExtra("data", bundle);
                         startActivity(ResultActivity.class, bundle);
@@ -164,7 +174,7 @@ public class RecognizerActivity extends BaseActivity {
                     public void onError(Request request, IOException e) {
                         Logger.d("唉唉唉");
                     }
-                },temp,"file");
+                }, temp, "file");
             }
 
         });
@@ -187,20 +197,20 @@ public class RecognizerActivity extends BaseActivity {
         image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentPath != null) {
-                  bitmap = BitmapFactory.decodeFile(currentPath);
-                }else if(grayBitmap != null){
+                if (postFile[0] != null) {
+                    bitmap = BitmapFactory.decodeFile(postFile[0].getAbsolutePath());
+                } else if (grayBitmap != null) {
                     bitmap = grayBitmap;
-                }else if(twoBitmap != null){
+                } else if (twoBitmap != null) {
                     bitmap = twoBitmap;
                 } else if (nosingBitmap != null) {
                     bitmap = nosingBitmap;
                 } else {
                     showToast("当前没有图片");
                 }
-                Matrix matrix  = new Matrix();
+                Matrix matrix = new Matrix();
                 matrix.setRotate(90 * count);
-                Bitmap newBitmap = Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
+                Bitmap newBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
                 image.setImageBitmap(newBitmap);
                 count++;
             }
@@ -239,9 +249,9 @@ public class RecognizerActivity extends BaseActivity {
 
     }
 
-    private void doGray(){
+    private void doGray() {
         if (path == null && grayBitmap == null) {
-            Snackbar.make(layout,"当前图片为空",Snackbar.LENGTH_LONG).setAction("回到上页选择图片", new View.OnClickListener() {
+            Snackbar.make(layout, "当前图片为空", Snackbar.LENGTH_LONG).setAction("回到上页选择图片", new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     startActivity(MainActivity.class);
@@ -257,7 +267,7 @@ public class RecognizerActivity extends BaseActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Bitmap bitmap = BitmapFactory.decodeFile(path);
+                Bitmap bitmap = BitmapFactory.decodeFile(postFile[0].getAbsolutePath());
                 grayBitmap = imageUtils.lineGrey(bitmap);
                 handler.post(new Runnable() {
                     @Override
@@ -274,21 +284,22 @@ public class RecognizerActivity extends BaseActivity {
                         catLoadingView.dismiss();
                     }
                 });
+
             }
         }).start();
 
     }
 
-    private void doTwoValue(){
+    private void doTwoValue() {
         if (grayBitmap == null && twoBitmap == null) {
-            Snackbar.make(layout,"你还没有灰度化",Snackbar.LENGTH_LONG).setAction("点我进行灰度化", new View.OnClickListener() {
+            Snackbar.make(layout, "你还没有灰度化", Snackbar.LENGTH_LONG).setAction("点我进行灰度化", new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     doGray();
                 }
             }).show();
             return;
-        }else if(grayBitmap == null && twoBitmap != null){
+        } else if (grayBitmap == null && twoBitmap != null) {
             showToast("你已经二值化了，请进行下一步");
             return;
         }
@@ -317,16 +328,16 @@ public class RecognizerActivity extends BaseActivity {
 
     }
 
-    private void cancelNosing(){
+    private void cancelNosing() {
         if (twoBitmap == null && nosingBitmap == null) {
-            Snackbar.make(layout,"你还没有二值化",Snackbar.LENGTH_LONG).setAction("点我进行二值化", new View.OnClickListener() {
+            Snackbar.make(layout, "你还没有二值化", Snackbar.LENGTH_LONG).setAction("点我进行二值化", new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     doTwoValue();
                 }
             }).show();
             return;
-        }else if(twoBitmap == null && nosingBitmap != null){
+        } else if (twoBitmap == null && nosingBitmap != null) {
             showToast("已经去噪了,请进行下一步");
             return;
         }
@@ -356,7 +367,7 @@ public class RecognizerActivity extends BaseActivity {
 
     private File generatePostFile(Bitmap bitmap) throws IOException {
         File dir = MyApp.getAppContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        if(dir.exists()){
+        if (dir.exists()) {
             dir.mkdirs();
         }
         File tempFile = null;
@@ -421,11 +432,5 @@ public class RecognizerActivity extends BaseActivity {
 
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (catLoadingView != null) {
-            catLoadingView.dismiss();
-        }
-    }
+
 }
