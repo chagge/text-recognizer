@@ -9,7 +9,6 @@
     android:orientation="vertical"
     tools:context="uestc.xfj.recognizer.activity.RecognizerActivity">
 
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="55dp"
@@ -47,7 +46,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:weightSum="4"
+        android:weightSum="3"
         android:padding="@dimen/activity_vertical_margin">
 
         <RelativeLayout
@@ -55,10 +54,10 @@
             android:layout_height="0dp"
             android:layout_weight="1">
             <info.hoang8f.widget.FButton
-                android:id="@+id/gray_button"
-                android:layout_width="100dp"
+                android:id="@+id/chinese_button"
+                android:layout_width="120dp"
                 android:layout_height="40dp"
-                android:text="灰度化"
+                android:text="识别中文"
                 android:layout_centerHorizontal="true"
                 android:textColor="@color/white"
                 android:textSize="20sp"
@@ -74,10 +73,10 @@
             android:layout_height="0dp"
             android:layout_weight="1">
             <info.hoang8f.widget.FButton
-                android:id="@+id/two_value_button"
-                android:layout_width="100dp"
+                android:id="@+id/english_button"
+                android:layout_width="120dp"
                 android:layout_height="40dp"
-                android:text="二值化"
+                android:text="识别英文"
                 android:layout_centerHorizontal="true"
                 android:textColor="@color/white"
                 android:textSize="20sp"
@@ -92,10 +91,10 @@
             android:layout_height="0dp"
             android:layout_weight="1">
             <info.hoang8f.widget.FButton
-                android:id="@+id/denoising_button"
-                android:layout_width="100dp"
+                android:id="@+id/mix_button"
+                android:layout_width="120dp"
                 android:layout_height="40dp"
-                android:text="去噪"
+                android:text="识别中英文"
                 android:layout_centerHorizontal="true"
                 android:textColor="@color/white"
                 android:textSize="20sp"
@@ -106,32 +105,23 @@
                 fbutton:shadowHeight="5dp" />
         </RelativeLayout>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
-            <info.hoang8f.widget.FButton
-                android:id="@+id/recognizer_button"
-                android:layout_width="100dp"
-                android:layout_height="40dp"
-                android:text="识别"
-                android:layout_centerHorizontal="true"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                fbutton:buttonColor="@color/fbutton_color_wisteria"
-                fbutton:cornerRadius="5dp"
-                fbutton:shadowColor="@color/fbutton_color_wisteria"
-                fbutton:shadowEnabled="true"
-                fbutton:shadowHeight="5dp" />
-        </RelativeLayout>
-
-
-
-
-
-
-
+        <!--<RelativeLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="0dp"-->
+            <!--android:layout_weight="1">-->
+            <!--<info.hoang8f.widget.FButton-->
+                <!--android:id="@+id/recognizer_button"-->
+                <!--android:layout_width="100dp"-->
+                <!--android:layout_height="40dp"-->
+                <!--android:text="识别"-->
+                <!--android:layout_centerHorizontal="true"-->
+                <!--android:textColor="@color/white"-->
+                <!--android:textSize="20sp"-->
+                <!--fbutton:buttonColor="@color/fbutton_color_wisteria"-->
+                <!--fbutton:cornerRadius="5dp"-->
+                <!--fbutton:shadowColor="@color/fbutton_color_wisteria"-->
+                <!--fbutton:shadowEnabled="true"-->
+                <!--fbutton:shadowHeight="5dp" />-->
+        <!--</RelativeLayout>-->
     </LinearLayout>
-
-
 </LinearLayout>

@@ -13,5 +13,10 @@ public class Constants {
     public static final int REQUEST_CODE_CROP = 0x1002;
     public static final int REQUEST_CODE_EDIT = 0x1003;
 
+    public static final int CROP_PHOTO = 0x1004;
+    public static final int TAKE_PHOTO = 0x1005;
+
+
+
 
 }
