@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -30,6 +31,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
  * Created by byhieg on 16-4-16.
@@ -41,7 +43,13 @@ public  class HttpUtils {
     private Gson mGson;
 
     private HttpUtils(){
-        okHttpClient = new OkHttpClient();
+        HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
+        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+        OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder().
+                addInterceptor(httpLoggingInterceptor).
+                connectTimeout(1000, TimeUnit.MILLISECONDS);
+        okHttpClient = httpClientBuilder.build();
         this.handler = new Handler(Looper.getMainLooper());
         mGson = new Gson();
     }

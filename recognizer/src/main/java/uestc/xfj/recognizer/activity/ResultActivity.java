@@ -30,6 +30,12 @@ public class ResultActivity extends BaseActivity {
     @Override
     public void initData() {
         result = getIntent().getExtras().getString("result");
+        String temp;
+        temp = result.replaceAll("\n|\r","");
+        temp = temp.trim();
+        if("".equals(temp)){
+            result = "图片资源有问题，暂无文字在上面";
+        }
     }
 
     @Override
