@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_result"
     android:layout_width="match_parent"
@@ -22,7 +21,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_arrow_back_white_36dp"/>
+            android:src="@drawable/ic_arrow_back_white_36dp" />
 
         <TextView
             android:id="@+id/text"
@@ -32,20 +31,18 @@
             android:layout_centerVertical="true"
             android:text="识别结果"
             android:textColor="@color/white"
-            android:textSize="20sp"/>
+            android:textSize="20sp" />
     </RelativeLayout>
-    <ScrollView
+
+    <TextView
+        android:id="@+id/recognizer_result"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:id="@+id/recognizer_result"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:gravity="center"
-            android:maxLines="500"
-            android:textColor="@color/black"
-            android:scrollbars="vertical"
-            android:textSize="30sp"/>
-    </ScrollView>
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:gravity="center"
+        android:maxLines="500"
+        android:scrollbars="vertical"
+        android:textColor="@color/black"
+        android:textSize="30sp" />
+
 </LinearLayout>

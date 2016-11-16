@@ -246,8 +246,8 @@ public class MainActivity extends BaseActivity {
 
 
     public void saveFile(Bitmap bm, File file) throws IOException {
+        if(file == null) return;
         BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
-        if(bos == null) return;
         bm.compress(Bitmap.CompressFormat.JPEG, 100, bos);
         bos.flush();
         bos.close();
