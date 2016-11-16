@@ -17,6 +17,8 @@ import com.example.byhieglibrary.Net.ResultCallback;
 import com.orhanobut.logger.Logger;
 import com.roger.catloadinglibrary.CatLoadingView;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,9 +46,10 @@ public class RecognizerActivity extends BaseActivity {
     private File imageFile = null;
 
     public CatLoadingView catLoadingView;
-    private int count = 0;
+    private int count;
     private Bitmap bitmap;
     private String url;
+    Bitmap[] newBitmaps = new Bitmap[4];
 
     @Override
     public int getLayoutId() {
@@ -55,6 +58,7 @@ public class RecognizerActivity extends BaseActivity {
 
     @Override
     public void initData() {
+        count = 0;
         catLoadingView = new CatLoadingView();
         String path = getIntent().getBundleExtra("data").getString("path");
         if (path != null) {
@@ -63,6 +67,20 @@ public class RecognizerActivity extends BaseActivity {
             showToast("文件有问题");
         }
         url = "http://123.206.6.222/recognizer/recog";
+
+        bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
+        Matrix[] matrixs = new Matrix[4];
+        for (int i = 0; i < 4; i++) {
+            matrixs[i] = new Matrix();
+            matrixs[i].setRotate(90 * i);
+        }
+        if (bitmap == null) {
+            showToast("没有图片");
+            return;
+        }
+        for(int i = 0 ;i < 4;i++){
+            newBitmaps[i] = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrixs[i], true);
+        }
 
     }
 
@@ -92,28 +110,16 @@ public class RecognizerActivity extends BaseActivity {
         image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
-                Matrix[] matrixs = new Matrix[4];
-                for (int i = 0; i < 4; i++) {
-                    matrixs[i] = new Matrix();
-                    matrixs[i].setRotate(90 * i);
-                }
-                if (bitmap == null) {
-                    showToast("没有图片");
-                    return;
-                }
-                Bitmap[] newBitmaps = {Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrixs[0], true),
-                        Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrixs[1], true),
-                        Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrixs[2], true),
-                        Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrixs[3], true)};
-                image.setImageBitmap(newBitmaps[count % 4]);
                 count++;
+                image.setImageBitmap(newBitmaps[count % 4]);
             }
         });
 
         chineseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                catLoadingView.show(getSupportFragmentManager(), "");
+                saveFile(newBitmaps[count % 4]);
                 recognizeChinese();
             }
         });
@@ -121,6 +127,8 @@ public class RecognizerActivity extends BaseActivity {
         englishButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                catLoadingView.show(getSupportFragmentManager(), "");
+                saveFile(newBitmaps[count % 4]);
                 recognizeEnglish();
             }
         });
@@ -128,6 +136,8 @@ public class RecognizerActivity extends BaseActivity {
         mixButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                catLoadingView.show(getSupportFragmentManager(), "");
+                saveFile(newBitmaps[count % 4]);
                 recognizeMix();
             }
         });
@@ -159,7 +169,6 @@ public class RecognizerActivity extends BaseActivity {
     private void doPost(File file, String lang) {
         String fileName = file.getName();
         String prefix = fileName.substring(fileName.lastIndexOf(".") + 1);
-        catLoadingView.show(getSupportFragmentManager(), "");
         Map<String, String> params = new HashMap<>();
         params.put("format", prefix);
         params.put("lang", lang);
@@ -189,6 +198,20 @@ public class RecognizerActivity extends BaseActivity {
                 Logger.d("唉唉唉");
             }
         }, file, "file");
+    }
+
+    private void saveFile(Bitmap bitmap){
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(imageFile);
+            if(bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)) {
+                out.flush();
+                out.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
 

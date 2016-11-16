@@ -48,7 +48,9 @@ public  class HttpUtils {
 
         OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder().
                 addInterceptor(httpLoggingInterceptor).
-                connectTimeout(1000, TimeUnit.MILLISECONDS);
+                connectTimeout(10, TimeUnit.HOURS).
+                readTimeout(10,TimeUnit.HOURS).
+                writeTimeout(10,TimeUnit.HOURS);
         okHttpClient = httpClientBuilder.build();
         this.handler = new Handler(Looper.getMainLooper());
         mGson = new Gson();
