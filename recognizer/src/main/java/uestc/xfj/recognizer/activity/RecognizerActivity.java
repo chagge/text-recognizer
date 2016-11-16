@@ -172,6 +172,7 @@ public class RecognizerActivity extends BaseActivity {
                 int resultCode = response.getResultCode();
                 if(resultCode != 0){
                     showToast("图片有问题");
+                    catLoadingView.dismiss();
                     return;
                 }
                 Bundle bundle = new Bundle();
