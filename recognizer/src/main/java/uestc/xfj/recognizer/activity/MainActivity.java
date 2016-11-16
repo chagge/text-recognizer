@@ -233,11 +233,6 @@ public class MainActivity extends BaseActivity {
                     Bitmap cropPhoto = BitmapFactory.decodeStream(getContentResolver()
                             .openInputStream(imageUri));
                     imageView.setImageBitmap(cropPhoto);
-                    try {
-                        saveFile(cropPhoto,currentImageFile);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -245,13 +240,6 @@ public class MainActivity extends BaseActivity {
     }
 
 
-    public void saveFile(Bitmap bm, File file) throws IOException {
-        if(file == null) return;
-        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
-        bm.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-        bos.flush();
-        bos.close();
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

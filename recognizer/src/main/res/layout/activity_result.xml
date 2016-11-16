@@ -43,6 +43,6 @@
         android:maxLines="500"
         android:scrollbars="vertical"
         android:textColor="@color/black"
-        android:textSize="30sp" />
+        android:textSize="25sp" />
 
 </LinearLayout>
