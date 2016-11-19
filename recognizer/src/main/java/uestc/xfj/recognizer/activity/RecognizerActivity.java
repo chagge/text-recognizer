@@ -119,7 +119,9 @@ public class RecognizerActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 catLoadingView.show(getSupportFragmentManager(), "");
-                saveFile(newBitmaps[count % 4]);
+                if(count % 4 != 0){
+                    saveFile(newBitmaps[count % 4]);
+                }
                 recognizeChinese();
             }
         });
@@ -128,7 +130,9 @@ public class RecognizerActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 catLoadingView.show(getSupportFragmentManager(), "");
-                saveFile(newBitmaps[count % 4]);
+                if(count % 4 != 0){
+                    saveFile(newBitmaps[count % 4]);
+                }
                 recognizeEnglish();
             }
         });
@@ -137,7 +141,9 @@ public class RecognizerActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 catLoadingView.show(getSupportFragmentManager(), "");
-                saveFile(newBitmaps[count % 4]);
+                if(count % 4 != 0){
+                    saveFile(newBitmaps[count % 4]);
+                }
                 recognizeMix();
             }
         });
